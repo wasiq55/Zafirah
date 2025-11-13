@@ -1,0 +1,169 @@
+<%- include('./partials/header') %>
+
+  <% if(success && success.length> 0){ %>
+    <div class="fixed top-5 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-2 rounded-md shadow-lg z-50">
+      <%= success %>
+    </div>
+    <% } %>
+
+      <!-- 🏷️ Hero Section -->
+      <section class="mt-16 relative w-full h-[400px] md:h-[500px] overflow-hidden">
+        <img
+          src="https://images-eu.ssl-images-amazon.com/images/G/31/img21/MA2025/GW/BAU/Unrec/PC/934044814._CB551384116_.jpg"
+          alt="Big Sale" class="w-full h-full object-cover">
+
+        <div
+          class="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-center text-white">
+          <h1 class="text-3xl md:text-5xl font-bold mb-3 drop-shadow-lg">Big Diwali Sale 🎉</h1>
+          <p class="text-lg md:text-xl mb-4 font-medium">Up to 70% Off on New Arrivals!</p>
+          <a href="#new-collection"
+            class="bg-yellow-400 text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-yellow-500 transition duration-200">
+            Explore Now
+          </a>
+        </div>
+      </section>
+
+
+      <!-- 🆕 New Collection Slider -->
+      <!-- <section id="new-collection" class="max-w-7xl mx-auto mt-16 px-5 md:px-10">
+  <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-gray-800">✨ New Collections</h2>
+  <div class="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
+    <% products.slice(0,6).forEach(product => { %>
+      <div class="min-w-[220px] bg-white rounded-xl shadow hover:shadow-lg transition flex-shrink-0">
+        <div class="h-52 flex items-center justify-center"
+             style="background-color: #<%= product.bgcolor %>;">
+          <img src="data:image/jpeg;base64,<%= product.image.toString('base64') %>"
+               alt=""
+               class="h-40 object-contain">
+        </div>
+        <div class="p-3 text-center">
+          <h3 class="font-medium text-gray-800 truncate"><%= product.name %></h3>
+          <p class="text-blue-600 font-semibold mt-1">₹ <%= product.price %></p>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</section> -->
+
+      <!-- 🛍️ All Products -->
+      <section class="min-h-screen w-full bg-gray-50 px-5 md:px-10 lg:px-20 py-16 mt-10 rounded-t-3xl shadow-inner">
+
+        <div class="flex justify-between items-center mb-8">
+          <h2 class="text-2xl md:text-3xl font-semibold text-gray-800">Explore Our Products</h2>
+
+          <button id="filterBtn"
+            class="flex items-center gap-2 bg-[#48606E] text-white px-4 py-2 rounded-lg hover:bg-[#3b4f5c] transition">
+            <i class="ri-filter-3-line text-lg"></i> Filters
+          </button>
+        </div>
+
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          <% if(products.length===0){ %>
+            <div class="col-span-full flex items-center justify-center h-64 text-gray-500 text-lg">
+              No products found.
+            </div>
+            <% } else { %>
+              <% products.forEach(product=> { %>
+                <div
+                  class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 flex flex-col">
+                  <a href="/products/product/<%= product._id %>">
+                    <div class="w-full h-52 flex items-center justify-center hover:opacity-90 transition"
+                      style="background-color: #<%= product.bgcolor %>;">
+                      <img class="h-44 object-contain"
+                        src="data:image/jpeg;base64,<%= product.image.toString('base64') %>" alt="">
+                    </div>
+                  </a>
+
+                  <div class="px-4 py-3 flex justify-between items-center"
+                    style="background-color: #<%= product.panelcolor %>; color: #<%= product.textcolor %>;">
+                    <div>
+                      <h3 class="font-medium text-base leading-tight">
+                        <%= product.name %>
+                      </h3>
+                      <p class="text-sm font-semibold mt-1">₹ <%= product.price %>
+                      </p>
+                    </div>
+                    <a href="/addtocart/<%= product._id %>"
+                      class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white hover:bg-blue-600 transition">
+                      <i class="ri-add-line"></i>
+                    </a>
+                  </div>
+                </div>
+
+                <% }) %>
+                  <% } %>
+        </div>
+      </section>
+
+      <!-- 🧭 Sidebar Filter -->
+      <div id="filterSidebar"
+        class="fixed top-0 right-0 w-80 md:w-96 h-full bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
+        <div class="flex justify-between items-center px-6 py-4 border-b">
+          <h3 class="text-xl font-semibold text-gray-800">Filters & Sort</h3>
+          <button id="closeSidebar" class="text-gray-600 hover:text-gray-900 text-2xl">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <div class="p-6">
+          <div class="mb-6">
+            <h4 class="text-lg font-semibold mb-2">Sort by</h4>
+            <form action="/shop" method="GET">
+              <select name="sortby"
+                class="border border-gray-300 rounded-md w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                onchange="this.form.submit()">
+                <option value="">Default</option>
+                <option value="popular" <%=sortby==='popular' ? 'selected' : '' %>>Popular</option>
+                <option value="newest" <%=sortby==='newest' ? 'selected' : '' %>>Newest</option>
+                <option value="price-asc" <%=sortby==='price-asc' ? 'selected' : '' %>>Price: Low to High</option>
+                <option value="price-desc" <%=sortby==='price-desc' ? 'selected' : '' %>>Price: High to Low</option>
+              </select>
+            </form>
+          </div>
+
+          <div class="mb-6">
+            <h4 class="text-lg font-semibold mb-2">Collections</h4>
+            <ul class="space-y-2 text-gray-600">
+              <li><a href="/shop?filter=new" class="hover:text-blue-500">New Collection</a></li>
+              <li><a href="/shop" class="hover:text-blue-500">All Products</a></li>
+              <li><a href="/shop?filter=discounted" class="hover:text-blue-500">Discounted</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="text-lg font-semibold mb-2">Filter by</h4>
+            <ul class="space-y-2 text-gray-600">
+              <li><a href="/shop?filter=available" class="hover:text-blue-500">Availability</a></li>
+              <li><a href="/shop?filter=discount" class="hover:text-blue-500">Discount</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overlay -->
+      <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 hidden z-40"></div>
+
+      <%- include('./partials/footer') %>
+
+        <script>
+          const filterBtn = document.getElementById('filterBtn');
+          const filterSidebar = document.getElementById('filterSidebar');
+          const closeSidebar = document.getElementById('closeSidebar');
+          const overlay = document.getElementById('overlay');
+
+          filterBtn.addEventListener('click', () => {
+            filterSidebar.classList.remove('translate-x-full');
+            overlay.classList.remove('hidden');
+          });
+
+          closeSidebar.addEventListener('click', () => {
+            filterSidebar.classList.add('translate-x-full');
+            overlay.classList.add('hidden');
+          });
+
+          overlay.addEventListener('click', () => {
+            filterSidebar.classList.add('translate-x-full');
+            overlay.classList.add('hidden');
+          });
+        </script>

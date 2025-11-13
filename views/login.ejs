@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zafirah | Login</title>
+  <link rel="icon" href="/images/logo.jpeg" type="image/png" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#F3F8FB] flex items-center justify-center min-h-screen font-['helvetica_now_display']">
+  <div class="bg-white rounded-2xl shadow-lg p-10 w-[380px]">
+    <div class="text-center mb-6">
+      <img src="/images/logo.jpeg" alt="Zafirah Logo" class="w-16 mx-auto mb-3 rounded-full">
+      <h1 class="text-3xl font-semibold text-[#48606E]">Welcome Back</h1>
+      <p class="text-gray-500 mt-1">Sign in to continue</p>
+    </div>
+
+    <form action="/users/login" method="POST" class="flex flex-col gap-5">
+      <input type="email" name="email" placeholder="Email"
+        class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#48606E]" required>
+      <input type="password" name="password" placeholder="Password"
+        class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#48606E]" required>
+
+      <button type="submit"
+        class="bg-[#48606E] text-white py-2 rounded-md hover:bg-[#324954] transition">Login</button>
+    </form>
+
+    <p class="text-center text-gray-500 mt-5 text-sm">
+      Don't have an account?
+      <a href="/users/register" class="text-[#48606E] font-medium hover:underline">Sign up</a>
+    </p>
+  </div>
+</body>
+</html>

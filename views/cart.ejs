@@ -1,0 +1,214 @@
+<%- include('./partials/header') %>
+
+<div class="w-full min-h-screen bg-gray-50 flex flex-col lg:flex-row items-start px-5 md:px-10 lg:px-20 py-20 gap-10">
+
+  <% if (user.cart.length === 0) { %>
+  <div class="text-center w-full text-gray-600 py-20">
+    <h2 class="text-2xl font-semibold">Your cart is empty 🛒</h2>
+    <p class="text-sm mt-2">Looks like you haven’t added anything yet.</p>
+    <a href="/shop" class="inline-block mt-6 bg-[#48606E] text-white px-6 py-2 rounded-md hover:bg-[#3a505d] transition-all">Shop Now</a>
+  </div>
+  <% } else { %>
+
+  <!-- Left Side: Product List -->
+  <div class="w-full lg:w-[70%] flex flex-col gap-8">
+    <% user.cart.forEach(function(product, index) { %>
+    <div class="bg-white rounded-lg shadow-md p-5 flex flex-col sm:flex-row gap-6 cart-item relative border border-gray-200"
+      data-index="<%= index %>"
+      data-price="<%= product.price %>"
+      data-discount="<%= product.discount || 0 %>">
+
+      <!-- Product Image -->
+      <div class="sm:w-1/3 flex justify-center items-center relative">
+        <div class="zoom-container relative">
+          <img class="h-[12rem] object-contain product-img"
+            src="data:image/jpeg;base64,<%= product.image.toString('base64') %>" alt="">
+          <div class="zoom-lens"></div>
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="sm:w-2/3 flex flex-col justify-between">
+        <div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-2"><%= product.name %></h3>
+          <p class="text-gray-600 mb-1">Price: ₹ <%= product.price %></p>
+          <p class="text-green-600 font-medium mb-1">Discount: ₹ <%= product.discount || 0 %></p>
+          <p class="text-gray-500 text-sm mb-3">Shipping: <span class="text-green-700 font-medium">FREE</span></p>
+        </div>
+
+        <!-- Quantity & Remove -->
+        <div class="flex items-center justify-between mt-2">
+          <div class="flex items-center gap-2">
+            <button class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center increase"><i class="ri-add-line"></i></button>
+            <span class="px-4 py-1 border rounded-md quantity text-gray-700">1</span>
+            <button class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center decrease"><i class="ri-subtract-line"></i></button>
+          </div>
+          <button class="text-red-500 hover:text-red-700 py-10 font-medium remove-btn">Remove</button>
+        </div>
+      </div>
+
+      <!-- Price Display -->
+      <div class="absolute bottom-5 right-5 text-right text-gray-800 font-semibold">
+        <h4>Subtotal: <span class="net-total text-green-700">₹ <%= product.price %></span></h4>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+
+  <!-- Right Side: Summary Box -->
+  <div class="w-full lg:w-[30%] bg-white shadow-md rounded-lg p-6 sticky top-28 h-fit border border-gray-200">
+    <h3 class="text-xl font-semibold mb-4">Order Summary</h3>
+
+    <div class="flex flex-col gap-2 text-gray-700 text-sm">
+      <div class="flex justify-between">
+        <span>Item(s) total</span>
+        <span id="summary-total">₹ 
+          <%= user.cart.reduce((acc, item) => acc + item.price, 0) %>
+        </span>
+      </div>
+      <div class="flex justify-between">
+        <span>Discounts</span>
+        <span id="summary-discount">₹ 
+          <%= user.cart.reduce((acc, item) => acc + (item.discount || 0), 0) %>
+        </span>
+      </div>
+      <div class="flex justify-between">
+        <span>Platform Fee</span>
+        <span>₹ 20</span>
+      </div>
+      <div class="flex justify-between">
+        <span>Shipping</span>
+        <span class="text-green-700 font-medium">FREE</span>
+      </div>
+    </div>
+
+    <div class="border-t mt-4 pt-4 flex justify-between text-lg font-semibold">
+      <span>Total</span>
+      <span class="text-green-600 total-amount">
+        ₹ <%= user.cart.reduce((acc, item) => acc + item.price - (item.discount || 0) + 20, 0) %>
+      </span>
+    </div>
+
+    <a href="/checkout" class="block mt-6">
+      <button class="w-full bg-[#48606E] hover:bg-[#3a505d] text-white px-6 py-3 rounded-md shadow-md flex justify-center items-center gap-2">
+        <i class="ri-wallet-line text-lg"></i> Proceed to Payment
+      </button>
+    </a>
+  </div>
+
+  <% } %>
+</div>
+
+<!-- ✅ Styles for Zoom -->
+<style>
+  .zoom-container {
+    position: relative;
+    overflow: hidden;
+    cursor: crosshair;
+  }
+
+  .zoom-lens {
+    position: absolute;
+    border: 2px solid #aaa;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    display: none;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-size: 200% 200%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  @media (max-width: 768px) {
+    .zoom-lens {
+      display: none !important;
+    }
+  }
+</style>
+
+<!-- ✅ Cart Script -->
+<script>
+  const items = document.querySelectorAll(".cart-item");
+
+  items.forEach(item => {
+    const inc = item.querySelector(".increase");
+    const dec = item.querySelector(".decrease");
+    const qtyEl = item.querySelector(".quantity");
+    const netEl = item.querySelector(".net-total");
+    const totalEl = document.querySelector(".total-amount");
+    const removeBtn = item.querySelector(".remove-btn");
+    const price = parseFloat(item.dataset.price);
+    const discount = parseFloat(item.dataset.discount);
+    const fee = 20;
+    let qty = 1;
+
+    inc.addEventListener("click", () => {
+      qty++;
+      qtyEl.textContent = qty;
+      updateTotals();
+    });
+
+    dec.addEventListener("click", () => {
+      if (qty > 1) qty--;
+      qtyEl.textContent = qty;
+      updateTotals();
+    });
+
+    removeBtn.addEventListener("click", async () => {
+      const index = item.dataset.index;
+      const res = await fetch(`/remove-from-cart/${index}`, { method: "DELETE" });
+      if (res.ok) {
+        item.remove();
+        alert("Item removed!");
+        location.reload();
+      }
+    });
+
+    function updateTotals() {
+      const subtotal = price * qty;
+      const total = (price - discount) * qty + fee;
+      netEl.textContent = "₹ " + subtotal;
+      totalEl.textContent = "₹ " + total;
+    }
+  });
+
+  // === Smooth Zoom ===
+  document.querySelectorAll(".zoom-container").forEach(container => {
+    const img = container.querySelector(".product-img");
+    const lens = container.querySelector(".zoom-lens");
+    lens.style.backgroundImage = `url('${img.src}')`;
+
+    container.addEventListener("mouseenter", () => {
+      lens.style.display = "block";
+      requestAnimationFrame(() => lens.style.opacity = 1);
+    });
+
+    container.addEventListener("mouseleave", () => {
+      lens.style.opacity = 0;
+      setTimeout(() => lens.style.display = "none", 150);
+    });
+
+    container.addEventListener("mousemove", e => {
+      const rect = container.getBoundingClientRect();
+      const lensW = lens.offsetWidth;
+      const lensH = lens.offsetHeight;
+      let x = e.clientX - rect.left - lensW / 2;
+      let y = e.clientY - rect.top - lensH / 2;
+      if (x < 0) x = 0;
+      if (y < 0) y = 0;
+      if (x > rect.width - lensW) x = rect.width - lensW;
+      if (y > rect.height - lensH) y = rect.height - lensH;
+      lens.style.left = `${x}px`;
+      lens.style.top = `${y}px`;
+      const zoomX = img.naturalWidth / rect.width;
+      const zoomY = img.naturalHeight / rect.height;
+      lens.style.backgroundSize = `${rect.width * zoomX * 2}px ${rect.height * zoomY * 2}px`;
+      lens.style.backgroundPosition = `-${x * zoomX * 2}px -${y * zoomY * 2}px`;
+    });
+  });
+</script>
+
+<%- include('./partials/footer') %>

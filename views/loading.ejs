@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zafirah</title>
+  <link rel="icon" href="/images/logo.jpeg" type="image/jpeg">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #0d1117;
+    }
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+    #loader-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      z-index: 2;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <div id="loader-content">
+    <h1 class="text-3xl font-semibold tracking-widest">Zafirah</h1>
+    <p class="text-gray-400 mt-3">Loading your experience...</p>
+  </div>
+
+  <script>
+    // === THREE.JS SETUP ===
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("canvas"), alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const geometry = new THREE.IcosahedronGeometry(1, 1);
+    const material = new THREE.MeshStandardMaterial({ color: 0x00bcd4, wireframe: true });
+    const sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+
+    const light = new THREE.PointLight(0xffffff, 1);
+    light.position.set(5, 5, 5);
+    scene.add(light);
+
+    camera.position.z = 3;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      sphere.rotation.x += 0.01;
+      sphere.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // === GSAP ANIMATION ===
+    gsap.from("#loader-content h1", { y: 50, opacity: 0, duration: 1 });
+    gsap.from("#loader-content p", { y: 30, opacity: 0, delay: 0.5, duration: 1 });
+
+    // Simulate loading time
+    setTimeout(() => {
+      gsap.to("#loader-content", { opacity: 0, duration: 1 });
+      gsap.to("#canvas", { opacity: 0, duration: 1, onComplete: () => {
+        window.location.href = "/index"; // Redirect to your login route
+      }});
+    }, 4000); // 4 seconds loading
+  </script>
+</body>
+</html>
